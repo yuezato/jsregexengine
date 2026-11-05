@@ -1,6 +1,9 @@
 reference: 100000 patterns (83 skipped as too large to enumerate), 449418 starts, 224349 matches; lookaround in 53%, lookbehind in 31%, lazy plus in 39%
 reference: list semantics vs ECMAScript matcher: 0 mismatches; bitre vs list semantics: 0 mismatches
-V8 (v25.9.0): 50000 random patterns, exec and matchAll: 0 mismatches
+reference: offline all-start reporter vs list semantics: 0 mismatches
+V8 (v24.22.1): 50000 random patterns, exec and matchAll: 0 mismatches
 families: 488 instances (RegElk families and lazy variants), exec and matchAll: 0 mismatches with V8
-examples: 65 patterns, 196 starts, anchored matches: 0 mismatches with V8
-flags and classes (v25.9.0): 14 cases, 0 skipped, 0 mismatches with V8
+examples: 88 patterns, 263 starts, anchored matches: 0 mismatches with V8
+flags and classes (v24.22.1): 22 cases, 0 skipped, 0 mismatches with V8
+columns: 11824 maps and 4276 forest/stop/encoding cases; all comparisons passed
+batch: 9207 anchored atomic rows against two oracles; possessive and overlapping cases passed

@@ -7,7 +7,7 @@ targeted(rng, depth)  biased towards the delicate cases: plus (often lazy) over 
                       chains of nested quantifiers, empty captures, and captures inside
                       lookarounds inside repetition.
 random_pattern(rng)   one of the two, as all tests use it.
-Neither produces atomic groups, which bitre.py does not support.
+These shared V8 cases omit atomic groups; test_batch.py generates those separately.
 """
 from semantics import chr_, eps, fail, pos, seq, alt, cap, quant, look
 

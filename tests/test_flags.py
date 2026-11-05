@@ -7,10 +7,19 @@ from bitre import Regex, run
 CASES = [(r'^\w+$', 'm', 'ab\ncd'), (r'^(\w)', 'm', 'x\ny\nz'), (r'a.c', '', 'a\nc abc'), (r'a.c', 's', 'a\nc'),
          (r'[A-Z]+', 'i', 'xAbCy'), (r'(?i:a)b', '', 'AB Ab ab'), (r'\d+(\s)\D', '', 'x12 y'), (r'\bfoo\B', '', 'foo fool'),
          (r'[^\d\s]+', '', '12 ab3'), (r'(\w+)\s(?=(\w+))', '', 'hello big world'), (r'(?<!\d)(\d)', '', 'a1 22'),
-         (r'k', 'i', 'K'), (r'[à-ÿ]+', 'i', 'xÀÉy'), (r'(a|b)*?c', '', 'ababc')]
+         (r'k', 'i', 'K'), (r'[à-ÿ]+', 'i', 'xÀÉy'), (r'(a|b)*?c', '', 'ababc'),
+         ('k', 'i', 'K'), (r'\w', 'i', 'K'), ('[A-Z]', 'i', 'ſ'), ('[^A-Z]', 'i', 'ſ'),
+         ('ς', 'i', 'Σ'), ('σ', 'i', 'ς'), ('[ς]', 'i', 'σ'), ('ß', 'i', 'ẞ')]
 
 
 def main():
+    for flag in ('u', 'v', 'y'):
+        try:
+            Regex('.', flag)
+        except NotImplementedError:
+            pass
+        else:
+            raise AssertionError('unsupported flag silently accepted: ' + flag)
     jobs = [{'pat': p, 'word': w, 'flags': f} for p, f, w in CASES]
     bad = skipped = 0
     for (p, f, w), theirs in zip(CASES, common.v8(jobs)):

@@ -7,3 +7,5 @@ python3 tests/test_v8.py 2 50000 9
 python3 tests/test_families.py
 python3 tests/test_examples.py
 python3 tests/test_flags.py
+python3 tests/test_columns.py
+python3 tests/test_batch.py

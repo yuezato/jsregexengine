@@ -19,8 +19,9 @@ def answers(rx, w):
 
 def anchored(rx, w):
     """the match anchored at every start, as v8_run.js prints sticky matches"""
-    rx.index(w)
-    return [norm(rx.match_at(x)) for x in range(len(w) + 1)]
+    batch = rx.all_starts(w)
+    assert batch == [rx.match_at(x) for x in range(len(w) + 1)]
+    return [norm(row) for row in batch]
 
 
 def v8(jobs):

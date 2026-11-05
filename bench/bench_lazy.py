@@ -13,7 +13,10 @@ from families import LAZY, REGEX_SIZE
 
 
 def answers(rx, w):
-    return [rx.exec(w), rx.match_all(w)]
+    # Compare the two reset policies themselves at every start. match_all now
+    # uses the separate piecewise reporter and would bypass both walks.
+    rx.index(w)
+    return [rx.match_at(x) for x in range(len(w) + 1)]
 
 
 def agree(count):

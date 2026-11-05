@@ -1,46 +1,77 @@
-# bitre: a bit-table prototype of JavaScript regex matching with captures at every start
+# bitre: JavaScript-style regex matching from every start
 
-Anonymous artifact for the submission *JavaScript Regex Matching with Captures at Every Position*.
+This is the experimental Python implementation for *JavaScript Regex Matching with Captures from Every Start* (v59). For a pattern, a text and a set of allowed final positions, `Regex.all_starts` returns one row per starting position. Each row gives the first permitted match in JavaScript’s trial order, including its end and capture spans, or `None` for failure. The piecewise batch reporter implements Theorem 7.4. It shares work across overlapping lookarounds. `match_all` uses the same computation for the rows selected by the global cursor.
 
-`bitre.py` implements the paper's algorithm in its bit-table form (Section 7.4) in 281 lines of Python, using only the standard library. For a pattern with m nodes and a word with N = n + 1 positions, it builds a table of four bits per node and position in O(mN) time. From that table it reads off the preferred match, with every capture span, at any start. It was written from the paper's description, independently of the JavaScript prototype of Section 9.
-
-The repository supports four claims:
-
-1. **The algorithm can be implemented as described.** The prototype follows the paper's construction part by part (see [How bitre.py follows the paper](#how-bitrepy-follows-the-paper)).
-2. **It computes JavaScript's answers.** It agrees with two independent reference semantics at every start, and with V8 on `exec`, `matchAll` and sticky matches (see [Correctness](#correctness)).
-3. **Its running time is product-linear.** On the benchmark families of RegElk and on lazy variants of them, time grows as m·N (see [Product-linearity](#product-linearity)).
-4. **Backtracking cannot keep up.** On nested plus over bodies that can match the empty string, V8 takes exponential time even as a pure recognizer, as a closed form predicts. A 13-character pattern on 20 letters takes about 3 minutes, and a 43-character one on `aaaa` about 11 minutes (see [Where V8 breaks](#where-v8-breaks)).
-
-This is a prototype for checking claims, not a production engine. It is written in pure Python, so its absolute times say nothing about how it would compare with other engines. Only how time grows with m and N is meaningful.
+For a single match, `exec` builds a decision table and walks the leftmost match. `index(text, B).match_at(x)` walks one anchored match with the allowed ends fixed by `B`. These are the paths timed by the original RegElk experiments. The word-space index with output-sensitive sparse queries (Theorem 1.2) is in the paper’s separate JavaScript supplement. The tests and measurements below concern this Python implementation.
 
 ## Requirements
 
-- Python 3.11 or later, which provides the CPython regex parser `re._parser` used by the front end. Tested with CPython 3.13.18.
-- Node.js, for the comparisons with V8. Tested with v22.23.4 and v25.9.0. Choose the binary with the environment variable `NODE` (default `node`).
+- Python 3.11 or later, which provides the CPython regex parser `re._parser` used by the front end. The original measurements used CPython 3.13.18. The v59 correctness results below were obtained on CPython 3.12.14.
+- Node.js, for the comparisons with V8. The archived runs used v22.23.4 and v25.9.0. The v59 comparison used v24.22.1. Choose the binary with the environment variable `NODE` (default `node`).
 - Optionally RE2 (`pip install google-re2`), for one comparison in `bench/nested.py`.
 
 ## Quick start
 
 ```sh
-sh run_tests.sh                        # every correctness test, about one minute
-python3 bench/bench_regelk.py quick   # a short product-linearity run, a few seconds
+sh run_tests.sh
+python3 bench/bench_batch.py quick    # overlapping starts, forward and backward
+python3 bench/bench_regelk.py quick   # leftmost-match benchmark
 ```
 
 ```python
 from bitre import Regex
 
-rx = Regex(r'(?:()|a)+?$')        # JavaScript syntax; flags as in Regex(src, 'ims')
-rx.exec('a')                      # (0, 1, [None, None]): start, end, then one span per group
-Regex(r'(?=(a+))a').match_all('aaa')
-# [(0, 1, [None, (0, 3)]), (1, 2, [None, (1, 3)]), (2, 3, [None, (2, 3)])]
-rx = Regex(r'(?=(a+))a').index('aaa')   # the bit table for all starts ...
-rx.match_at(1)                    # ... then the match anchored at 1: (1, 2, [None, (1, 3)])
+rx = Regex(r'(?=(a+))a')
+rx.all_starts('aaa')
+# [(0, 1, [None, (0, 3)]), (1, 2, [None, (1, 3)]),
+#  (2, 3, [None, (2, 3)]), None]
+rx.match_all('aaa')                  # the three successful global matches
+rx.index('aaa', B={2}).match_at(1)   # (1, 2, [None, (1, 3)])
+
+Regex('a*+a').all_starts('a')         # [None, None]: the possessive star commits
+Regex('a*a').all_starts('a')[0]      # (0, 1, [None])
 ```
+
+Each successful row is `(start, end, slots)`. Slots are numbered from 1, in the order of the capturing parentheses. The first array element is an unused placeholder. A capture that did not participate has value `None`, whereas `(x, x)` is a defined empty capture. The result for a failed start is itself `None`. Pass the pattern body without JavaScript’s slash delimiters. Use `match_all(text)` for global matching.
+
+## Reading the examples in v59
+
+At position 0 on `ab`, compare where each pattern tries its trailing `b`.
+
+| Pattern | Before the final `b` | `Regex(pattern).all_starts('ab')[0]` |
+|---|---|---|
+| `(a)b` | Read `a`, advance to 1 and record the first group. | `(0, 2, [None, (0, 1)])` |
+| `(?:a)b` | Read the same letter without creating a capture for the parentheses. | `(0, 2, [None])` |
+| `(?=a)b` | Test for `a` and restore the cursor to 0. The following `b` fails there. | `None` |
+
+A positive lookahead can return to its entrance and still export a longer capture. The allowed final set filters matches before the first result is chosen.
+
+```python
+from bitre import Regex
+
+assert Regex(r'(?=(a+))').all_starts('aaaa')[1] == (1, 1, [None, (1, 4)])
+rx = Regex(r'a|aa')
+assert rx.all_starts('aa')[0][1] == 1
+assert rx.all_starts('aa', B={2})[0][1] == 2
+```
+
+In the example from Section 2, the body can inspect `aa` without moving, consume and capture one `a`, or consume two letters. At start 0 on `aab` the lazy and greedy versions both end at 3, but their last iterations write different spans.
+
+```python
+from bitre import Regex
+
+body = r'(?:(?=(aa))|(a)|aa)'
+assert Regex(body + r'+?a?b$').all_starts('aab')[0] == (0, 3, [None, None, (0, 1)])
+assert Regex(body + r'+a?b$').all_starts('aab')[0] == (0, 3, [None, None, (1, 2)])
+```
+
+The rest of the pattern, `a?b$`, succeeds from 1 or 2. At 0 the first iteration can finish with its lookahead, but the plus must continue. A later iteration replaces the capture written by that lookahead. Run `python3 tests/test_examples.py` to compare the complete rows at every start with V8, including failed starts.
 
 ## Repository layout
 
 ```
-bitre.py              the matcher
+bitre.py              syntax, region sweeps, single-match walk, piecewise batch reporter
+bitcolumns.py         packed partial maps, color lookup and stopping forests
 families.py           benchmark families: those of RegElk, and lazy variants
 run_tests.sh          runs every correctness test
 reference/
@@ -50,13 +81,16 @@ reference/
 tests/
   common.py           shared helpers: import paths, the V8 runner, normalization
   v8_run.js           runs V8 on JSON lines: exec and matchAll, or a sticky exec at a start
-  test_reference.py   bitre against both reference semantics, at every start
+  test_reference.py   the offline batch and the single-match walk against both semantics
+  test_batch.py       commitment, signed jumps, possessive quantifiers and overlapping starts
+  test_columns.py     half-open colors, inverse maps, stopping forests and rank/select
   test_v8.py          bitre against V8 on random patterns
   test_families.py    bitre against V8 on every benchmark family at small sizes
   test_examples.py    bitre against V8 on the paper's examples, at every start
   test_flags.py       bitre against V8 on flags and character classes
 bench/
   common.py           timing, least-squares fit and reporting
+  bench_batch.py      all anchored answers with overlapping lookaround and atomic jumps
   bench_regelk.py     product-linearity on RegElk's families
   bench_lazy.py       lazy variants, and the clocks-versus-clearing control
   clearing.py         the control matcher: literal capture clearing instead of clocks
@@ -71,20 +105,19 @@ bench/
 results/              the outputs reported below (text, and JSON with every timing)
 ```
 
-## How bitre.py follows the paper
+## How the implementation follows v59
 
-Section, theorem and appendix numbers refer to the submitted version.
+| Step | Implementation | Manuscript |
+|---|---|---|
+| Prepare the pattern | `Regex._prepare` cuts at assertions and atomic groups, preserving the local matching direction. `_partition` fixes pieces of size at most `2 ceil(sqrt(m)) - 1` before reading the word. | Sections 4, 7.4 and Appendix C.4 |
+| Compute viability | `_sweep` stores the entrance and exit marks, moving success and preferred stationary success in one byte per node and position. Atomic children are solved with all local exits allowed. A stationary commitment is a same-layer edge. A jump reads its chosen destination's already-computed exit mark. | Sections 4–7 and Appendix C.3 |
+| Select an endpoint | `_split` chooses full or moving results in a sequence. `Tail` follows the repeated body's first viable advances to the last body before the stop. A nullable mandatory first body supplies the captures when no advancing body supersedes it. | Sections 5–6 and Appendices C.1–C.3 |
+| Write captures | `_report` retains piece-root columns. In top-down order it rebuilds each piece and follows only the surviving visits for every selected start. Signed requests are filled in two sweeps, so nested lookbehind can move a capture outside the overall match. | Theorem 7.4 and Appendix C.4 |
+| Walk a single match | `_walk` and `_collect` replay a selected path with timestamped capture resets. This remains useful for a single query and the original experiments. | Appendix C.5 |
 
-| Lines | Part | Code lines | What it does | In the paper |
-|---|---|---|---|---|
-| 1–31 | constants | 17 | JavaScript's `.`, `\d`, `\w`, `\s`, line terminators, and the case canonicalization of the default (non-`u`) mode | |
-| 32–100 | front end | 62 | turns the tree of Python's regex parser into the paper's constructs: character, empty, failure, anchor, capture, choice, product, the six quantifiers, the four lookarounds | Definition 1.3, Table 1 |
-| 101–155 | regions | 49 | cuts the pattern into regions at lookaround children, and builds per region the edges of reverse reachability | Section 4 |
-| 156–228 | sweep | 68 | one reverse sweep per region; per node and position, four bits: A (entrance mark), C (exit mark), D (moving success) and Z (stationary preferred result) | Section 7.2, Algorithm 1; bit rules in Appendix C.2 |
-| 229–302 | walk | 66 | reads one match off the bits; clocks (timestamps) decide which captures survive, and each surviving capturing lookaround is replayed once | Section 7.4, Theorem 7.4; choices from Sections 5 and 6; clocks and replay in Appendices C.1 and C.2 |
-| 303–326 | interface | 19 | `exec`, `match_all` (resuming after an empty match as JavaScript does), and a helper that runs deep recursion on a large stack | Section 7.3 |
+For `m` syntax occurrences and `N = len(w)+1`, the batch takes `O(mN)` word-RAM operations. The capture arrays are delivered output. There are `O(sqrt(m))` simultaneously live columns in the piece passes. `bitcolumns.py` uses byte-rounded unsigned arrays for explicit positions. When positions exceed the column's budget, it colors half-open source–target intervals and stores fixed points separately. To look up a color, it stably partitions by digits of radix `O(sqrt(m))`. There are a constant number of digits. Packed bitmaps with prefix counts and select directories route a position through these partitions in constant time. Coded terminal maps traverse parent and inverse links without a word-length recursion stack.
 
-The bit table is stored as one byte per node and position, so memory is also O(mN).
+Theorem 7.4 gives `O(mN)` workspace **bits** in the manuscript’s RAM model, excluding input, supplied primitive tests and delivered output. The Python prototype also uses conventional syntax descriptors, objects and byte-rounded buffers. Its process RSS includes the interpreter and allocator. The batch API writes all rows once. `match_at` performs a walk when called later.
 
 ## Correctness
 
@@ -100,11 +133,13 @@ The set B comes from Problem 1.1: a match may be required to end in B, and an or
 
 | Test | Oracle | What is compared | Size | Mismatches |
 |---|---|---|---|---|
-| `test_reference.py` | both reference semantics | the match anchored at every start, for a random B | 100,000 random patterns; words over {a, b} of length 0–7; 449,418 starts, 224,349 of them with a match | 0 |
+| `test_reference.py` | both reference semantics | both batch and walk at every start, for a random B | 100,000 random patterns; words over {a, b} of length 0–7; 449,418 starts, 224,349 of them with a match | 0 |
 | `test_v8.py` | V8 | `exec` and `matchAll` | 50,000 random patterns; words of length 0–9 | 0 |
 | `test_families.py` | V8 | `exec` and `matchAll` | 488 instances of the benchmark families at small sizes | 0 |
-| `test_examples.py` | V8 | the match anchored at every start | the paper's examples: 65 patterns, 196 starts | 0 |
-| `test_flags.py` | V8 | `exec` and `matchAll` | 14 cases: flags `i`, `m`, `s`; classes `\d \w \s`; `\b`; case folding | 0 |
+| `test_examples.py` | V8 | the match anchored at every start | the paper's examples and related cases: 88 patterns, 263 starts | 0 |
+| `test_flags.py` | V8 | `exec` and `matchAll` | 22 cases: flags `i`, `m`, `s`; classes `\d \w \s`; `\b`; case folding | 0 |
+
+The additional `test_batch.py` compares 9,207 anchored rows containing atomic commitments with both reference semantics, tests all three possessive spellings, and checks mixed-direction requests. V8 comparisons use the standard fragment. `test_columns.py` checks 11,824 forward/backward partial maps, 4,276 forest/stop/direction/encoding instances, and the directory spill and shared-boundary cases.
 
 The list semantics and the ECMAScript matcher also agree with each other on all 100,000 patterns. A further 83 generated patterns were skipped because their result lists exceeded the enumeration budget.
 
@@ -112,11 +147,13 @@ Random patterns are built from `a`, `b`, `[ab]`, the empty pattern, failure and 
 
 The V8 comparison keeps words short so that V8 finishes. With words of up to 16 letters, three of the same 50,000 random patterns already make V8 run past a two-second limit (see [Where V8 breaks](#where-v8-breaks)).
 
-`results/tests.txt` holds the output of `sh run_tests.sh` with Node.js v25.9.0. With v22.23.4 every test also passes, except that `test_flags.py` skips the case `(?i:a)b`, because that version rejects the modifier syntax.
+`results/tests.txt` records the v59 Python suite. The original run under Node.js 25.9.0 is in commit `dee1217`. The RegElk, lazy and V8 measurement files below are the archived single-match experiments from that commit.
 
 ## Product-linearity
 
-**Method.** Each instance times `exec`, which builds the bit table for all starts and walks the leftmost match with its captures. RegElk's timer for V8 measures the same operation, `string.match`. Parsing is not timed, and each time is the best of three runs. m is the number of nodes of the parsed pattern and N = |w| + 1. Over each family we fit
+**All anchored starts.** `bench/bench_batch.py` compares every row of the batch against replay and checks the expected capture spans on `aⁿ`. It varies both the group count and word length for lookahead, lookbehind and a committing lookahead. `moving_cells` counts moving-column entries built (including piece reconstruction and any closed atomic child), and `replay_walk_calls` counts source visits by the single-match walk across all starts. They are separate operation counts, not interchangeable units of time. `results/batch.txt` records a run.
+
+**Original single-match method.** Each instance times `exec`, which builds the bit table for all starts and walks the leftmost match with its captures. RegElk's timer for V8 measures the same operation, `string.match`. Parsing is not timed, and each time is the best of three runs. m is the number of nodes of the parsed pattern and N = |w| + 1. Over each family we fit
 
   log t = c + a·log m + b·log N
 
@@ -189,7 +226,7 @@ Write `D_d(k)` for the number of ways in which `G_d` matches aᵏ. In JavaScript
 
 From `D_0(x) = 1 + x`, induction gives `D_d(x) = (1 + x) / (1 − (2^d − 1)·x)`. That is, `D_d(0) = 1` and `D_d(k) = 2^d · (2^d − 1)^(k−1)` for k ≥ 1.
 
-A backtracking matcher stops at the first match, and here there is none. So from every start it tries every way of matching every prefix, and it tests `b` exactly `Σ_{k=0..n} D_d(k) · (n − k + 1)` times. Each extra letter multiplies the work by 2^d − 1.
+In the literal backtracking semantics every attempt at the suffix fails. An unanchored search therefore tries `b` exactly `Σ_{k=0..n} D_d(k) · (n − k + 1)` times. For positive lengths the exact-length count grows by a factor of 2^d − 1 per extra letter. The V8 column below gives elapsed times. The suffix counts are calculated from the semantics.
 
 `bench/nested.py` checks this with a matcher that follows ECMAScript's RepeatMatcher, including the empty check. For every d ≤ 5 and n ≤ 6, its count of tests of `b` equals the formula. Its calls grow per letter by 3, 7, 15, 31, 63 for d = 2…6. For the same nesting over a body that cannot be empty (`a`), and for nested stars, the growth is only d. The cause is the empty first iteration of plus, which nearly doubles the number of choices at every level.
 
@@ -207,7 +244,7 @@ A backtracking matcher stops at the first match, and here there is none. So from
 
 The times follow the predicted growth. At d = 2 the short run (`results/v8_nested_quick.txt`) takes 2.1 s on a¹⁶, and 2.1 s × 3⁴ ≈ 170 s against 168 s on a²⁰. At d = 8 it takes 2.6 s on a³, and 2.6 s × 255 ≈ 663 s against 684 s on a⁴.
 
-**Captures and laziness do not matter.** They leave the number of matches unchanged and alter V8's time only by a constant factor. At d = 3 on a¹⁰ the times are:
+**Captured and lazy variants.** The failing searches below have the same number of semantic suffix trials. At d = 3 on a¹⁰ the archived V8 times were:
 
 - 13.1 s without captures
 - 16.5 s with captures, `(((a?)+)+)+b`
@@ -235,15 +272,15 @@ Spelled with capturing groups, the d = 2 pattern is `((a?)+)+b`, nine characters
     - choice
     - the greedy and lazy `?`, `*` and `+`
     - lookahead and lookbehind, of any width
+    - the proposed atomic group `(?>...)` and possessive `?+`, `*+` and `++`
     - the flags `i`, `m` and `s`
   - Not supported:
     - backreferences
-    - counted repeats `{n,m}`
-    - atomic groups, which are outside Theorem 7.4
+    - general counted repeats `{n,m}` (the parser identifies bounds spelled equivalently to optional, star or plus)
     - named groups
     - syntax that only JavaScript has: `\cX`, `\u{…}`, `\p{…}` and the `v` flag
 
-  Unsupported constructs raise `NotImplementedError` or a parser error.
+  Unsupported flag letters, general counted repeats and backreferences raise `NotImplementedError` or a parser error. The Python parser accepts a different syntax from ECMAScript outside the documented fragment.
 - **Parser.** The front end relies on `re._parser`, an internal module of CPython that may change between versions. On the supported fragment its syntax agrees with JavaScript's. It also merges single-letter alternatives into a class and factors common prefixes out of alternatives. Both rewrites preserve JavaScript's answers, and m counts nodes after them.
 - **Positions.** Positions are code points. On words without characters outside the Basic Multilingual Plane, they coincide with JavaScript's default mode, whose case folding `bitre.py` implements.
 - **Timing.** Pure Python costs roughly 0.5 to 1 µs per cell. Short runs (`quick`) give noisier slopes, because fixed costs weigh more at small sizes.
@@ -253,7 +290,8 @@ Spelled with capturing groups, the d = 2 pattern is `((a?)+)+b`, nine characters
 Times are for the machine above.
 
 ```sh
-sh run_tests.sh                    # correctness: about 1 minute
+sh run_tests.sh                    # correctness, including all-start reporting
+python3 bench/bench_batch.py       # all-start work counts and timings
 python3 bench/bench_regelk.py     # RegElk's families: about 1.5 minutes
 python3 bench/bench_lazy.py       # lazy variants and the control: about 1 minute
 python3 bench/bench_split.py      # sweep and walk separately: about 2 minutes

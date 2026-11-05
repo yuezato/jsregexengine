@@ -10,7 +10,7 @@ from bitre import Regex, run
 
 def main(seed, count, maxlen):
     rng = random.Random(seed)
-    done = skipped = bad_bitre = bad_spec = starts = matches = 0
+    done = skipped = bad_bitre = bad_batch = bad_spec = starts = matches = 0
     look = behind = lazy = 0
     while done < count:
         t = random_pattern(rng); src = S.to_js(t); G = S.finalize(t)
@@ -22,7 +22,12 @@ def main(seed, count, maxlen):
         except S.TooBig:                       # too many paths to enumerate: skip the pattern
             skipped += 1; continue
         spec = S.spec_answers(t, w, B, G)
-        rx = Regex(src).index(w, B)
+        rx = Regex(src)
+        batch = [None if m is None else (m[1], tuple(m[2])) for m in rx.all_starts(w, B)]
+        if batch != naive:
+            bad_batch += 1
+            if bad_batch <= 3:
+                print('BATCH MISMATCH', src, repr(w), sorted(B), naive, batch)
         got = [None if m is None else (m[1], tuple(m[2])) for m in map(rx.match_at, I)]
         done += 1; starts += n + 1; matches += sum(a is not None for a in naive)
         look += '(?=' in src or '(?!' in src or '(?<' in src
@@ -39,7 +44,8 @@ def main(seed, count, maxlen):
           % (done, skipped, starts, matches, 100 * look / done, 100 * behind / done, 100 * lazy / done))
     print('reference: list semantics vs ECMAScript matcher: %d mismatches; bitre vs list semantics: %d mismatches'
           % (bad_spec, bad_bitre))
-    return bad_spec + bad_bitre
+    print("reference: offline all-start reporter vs list semantics: %d mismatches" % bad_batch)
+    return bad_spec + bad_bitre + bad_batch
 
 
 if __name__ == '__main__':
