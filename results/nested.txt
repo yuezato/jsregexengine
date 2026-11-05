@@ -1,0 +1,31 @@
+1. tests of b by backtracking against the closed form, G_d b on a^n
+  d=1  n=0..6: 1 4 9 16 25 36 49
+  d=2  n=0..6: 1 6 23 76 237 722 2179
+  d=3  n=0..6: 1 10 75 532 3733 26142 183007
+  d=4  n=0..5: 1 18 275 4132 61989 929846
+  d=5  n=0..4: 1 34 1059 32836 1017925
+  all counts equal the closed form
+2. growth of all matcher calls per extra letter (the last ratio before a budget)
+  (?:P)+ over a?  d=1..6: 1.1 3.0 7.0 15.0 31.0 63.0
+  (?:P)+ over a   d=1..6: 1.1 2.0 3.0 4.0 5.0 6.0
+  (?:P)* over a   d=1..6: 1.1 2.0 3.0 4.0 5.0 6.0
+  (2^d - 1 for plus over a nullable body; about d otherwise)
+3. bitre (exec) on the same patterns
+  d= 2 n=   20  67 us
+  d= 3 n=   11  44 us
+  d= 5 n=    6  32 us
+  d= 6 n=    5  31 us
+  d= 7 n=    4  29 us
+  d= 8 n=    4  30 us
+  d= 9 n=    3  27 us
+  d= 2 n=10000  0.025 s
+  d= 8 n=10000  0.042 s
+  d=30 n=10000  0.119 s
+4. RE2 (search) on the same patterns
+  d= 2 n=    20  7 us
+  d= 8 n=     4  3 us
+  d= 8 n=100000  189 us
+  d=30 n=100000  204 us
+  RE2 rejects a(?=b)
+  RE2 rejects (?<=a)b
+  RE2: (?:(a)|b)* on ab gives group 1 = 'a' (JavaScript: undefined)

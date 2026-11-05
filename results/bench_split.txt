@@ -1,0 +1,8 @@
+NNPlus   sweep: slope m 1.01 N 1.02, 601-715 ns/cell | walk: 0.003-0.042 calls/cell, 315-571 ns/call, at most  2% of exec
+CDN      sweep: slope m 1.03 N 1.00, 611-676 ns/cell | walk: 0.005-0.072 calls/cell, 282-515 ns/call, at most  4% of exec
+Clocks   sweep: slope m 1.05 N 1.01, 555-706 ns/cell | walk: 0.003-0.043 calls/cell, 305-807 ns/call, at most  3% of exec
+LAreg    sweep: slope m 0.96 N 1.08, 611-1002 ns/cell | walk: 0.000-0.015 calls/cell, 265-570 ns/call, at most  1% of exec
+LBreg    sweep: slope m 0.99 N 1.02, 712-837 ns/cell | walk: 0.001-0.010 calls/cell, 311-353 ns/call, at most  0% of exec
+NNPlus?  sweep: slope m 1.02 N 1.01, 595-759 ns/cell | walk: 0.890-0.992 calls/cell, 323-491 ns/call, at most 43% of exec
+CDN?     sweep: slope m 1.01 N 1.01, 609-659 ns/cell | walk: 0.836-0.987 calls/cell, 329-458 ns/call, at most 41% of exec
+Clocks?  sweep: slope m 1.04 N 1.02, 562-677 ns/cell | walk: 0.940-0.996 calls/cell, 304-496 ns/call, at most 43% of exec

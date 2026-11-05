@@ -1,0 +1,29 @@
+Node.js 25.9.0, V8 14.1.146.11-node.25
+Largest accepted depth (up to 40):
+  (?:P)+  over a?  up to depth 4
+  (?:P)+? over a?  up to depth 4
+  (P)+    over a?  up to depth 4
+  (P)+?   over a?  up to depth 4
+  (?:P)+  over a   every depth up to 40
+  (?:P)*  over a   every depth up to 40
+  (?:P)*  over a?  every depth up to 40
+Time per letter on G_d b over a^n (exec with the l flag, best of 3):
+  d=1  n=10000: 113.8 ns/letter   n=100000: 114.9 ns/letter
+  d=2  n=10000: 237.4 ns/letter   n=100000: 247.4 ns/letter
+  d=3  n=10000: 437.3 ns/letter   n=100000: 467.3 ns/letter
+  d=4  n=10000: 880.4 ns/letter   n=100000: 960.2 ns/letter
+
+Node.js 22.23.4, V8 12.4.254.21-node.57
+Largest accepted depth (up to 40):
+  (?:P)+  over a?  up to depth 4
+  (?:P)+? over a?  up to depth 4
+  (P)+    over a?  up to depth 4
+  (P)+?   over a?  up to depth 4
+  (?:P)+  over a   every depth up to 40
+  (?:P)*  over a   every depth up to 40
+  (?:P)*  over a?  every depth up to 40
+Time per letter on G_d b over a^n (exec with the l flag, best of 3):
+  d=1  n=10000: 135.7 ns/letter   n=100000: 136.1 ns/letter
+  d=2  n=10000: 215.9 ns/letter   n=100000: 215.9 ns/letter
+  d=3  n=10000: 428.2 ns/letter   n=100000: 481.7 ns/letter
+  d=4  n=10000: 1072.3 ns/letter   n=100000: 1205.7 ns/letter

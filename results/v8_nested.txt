@@ -1,0 +1,20 @@
+Node.js 25.9.0, V8 14.1.146.11-node.25
+G_d b on a^n with RegExp.prototype.test (no captures, no lookaround):
+  d=2  13 chars  n=20  V8 168.4 s    b tested 1.05e+10 times  linear engine: accepted
+  d=3  18 chars  n=11  V8 88.7 s     b tested 3.08e+9 times  linear engine: accepted
+  d=5  28 chars  n= 6  V8 55.8 s     b tested 9.78e+8 times  linear engine: rejected
+  d=6  33 chars  n= 5  V8 86.3 s     b tested 1.04e+9 times  linear engine: rejected
+  d=7  38 chars  n= 4  V8 27.7 s     b tested 2.66e+8 times  linear engine: rejected
+  d=8  43 chars  n= 4  V8 684.1 s    b tested 4.28e+9 times  linear engine: rejected
+  d=9  48 chars  n= 3  V8 28.3 s     b tested 1.34e+8 times  linear engine: rejected
+Variants at d=3, n=10 (the number of matches is the same in all four):
+  no captures, greedy, then b    /(?:(?:(?:a?)+)+)+b/         V8 13.1 s
+  captures                       /(((a?)+)+)+b/               V8 16.5 s
+  no captures, lazy              /(?:(?:(?:a?)+?)+?)+?b/      V8 12.4 s
+  captures, lazy, then (?<=b)    /(((a?)+?)+?)+?(?<=b)/       V8 36.3 s
+Largest depth the linear engine accepts, for P_d = wrap(P_{d-1}) followed by b (up to 40):
+  (?:P)+  over a?  up to depth 4
+  (?:P)+? over a?  up to depth 4
+  (P)+    over a?  up to depth 4
+  (?:P)+  over a   every depth up to 40
+  (?:P)*  over a   every depth up to 40

@@ -1,0 +1,7 @@
+NNPlus                 m   26-  401  N   251- 2001  slope in m 0.99, in N 0.99   ns/cell 629-717
+CDN                    m   29-  404  N   251- 2001  slope in m 1.02, in N 1.00   ns/cell 614-717
+Clocks                 m   51-  801  N   251- 2001  slope in m 1.04, in N 1.02   ns/cell 484-653
+LAreg                  m   80- 1205  N   251- 2001  slope in m 0.98, in N 1.05   ns/cell 579-717
+LBreg                  m  104- 1604  N   251- 2001  slope in m 1.01, in N 1.00   ns/cell 657-736
+LAstr                  m   17        N  1001-64001  slope in N 1.01                ns/cell 565-647
+LBstr                  m   10        N  1001-64001  slope in N 1.00                ns/cell 623-761

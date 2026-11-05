@@ -1,0 +1,8 @@
+control: 2000 random patterns, 0 disagreements with bitre
+NNPlus?                m   28-  403  N   251- 2001  slope in m 1.07, in N 1.01   ns/cell 867-1120
+CDN?                   m   31-  406  N   251- 2001  slope in m 1.09, in N 1.00   ns/cell 869-1118
+Clocks?                m   53-  803  N   251- 2001  slope in m 1.10, in N 1.01   ns/cell 857-1138
+Clocks with clocks     m   41-  641  N   251- 1001  slope in m 1.02, in N 0.99   ns/cell 562-632
+Clocks with clearing   m   41-  641  N   251- 1001  slope in m 1.03, in N 0.99   ns/cell 563-645
+Clocks? with clocks    m   43-  643  N   251- 1001  slope in m 1.10, in N 1.00   ns/cell 851-1090
+Clocks? with clearing  m   43-  643  N   251- 1001  slope in m 1.42, in N 1.00   ns/cell 1002-3237

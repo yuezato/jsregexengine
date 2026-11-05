@@ -1,0 +1,14 @@
+V8 (v25.9.0): 50000 random patterns (seed 2), words of length 0-16, limit 2000 ms
+  #2156   finished     40 ms  '(?:(?:a??)+?(?:(?:\\B)*?|([ab])))+?^a'  on 'bbbabbbabbaabbaa'
+  #10189  stopped    2003 ms  '(?:b|((?:a|b)(?:(?:))+?)|(?:[ab]+)??(?:(?:)|((?:))|(?:)[ab]))*((?<=(?<!((((?:)))))))'  on 'ababbbbabbbababb'
+  #14493  finished    607 ms  '(?:(?:([ab])+)*?)*?((?:$)+(?:$)?)(?:(?=(?:)))+((?:))(?:[ab]|[ab])'  on 'babaabbbabbaba'
+  #32034  finished     74 ms  '((?:))+?(?:b|^)*?(?:[ab]+?)*?(?:(?!((?:)))|b*?|(b))(?<!(?:(?:))*?)\\B'  on 'baababaabaaabbab'
+  #34224  stopped    2002 ms  '(?:[ab]|((?:b??)+?))+?(?<=((?!(b[ab]|(((?:)))))))'  on 'bbbbbbabbbbbabab'
+  #39426  stopped    2002 ms  '(?:(?:((?:)(?!(a)))|(?:(?:[ab]+?)??)*?)*?)+?(?:(?<!([ab]?)))+?(?:)'  on 'bbaaaaaabbaabaab'
+  #39477  finished     52 ms  '(?:((?:[ab]+?)?)|(?=((((?:))))))*(?<!((?:(?:(?=[ab]))??)+|(?:)))'  on 'aabbaabbabbaaaa'
+  #41813  finished     57 ms  '(b|(?:[ab]+?)+?)+((?!((?:(b)|(?:(?:))+)(?<=a|b))))'  on 'aabbbaaabb'
+  #42512  finished     21 ms  '(?!(?:[ab](?<=(a+?|(a+?))))*?)'  on 'aa'
+9 cases slower than 20 ms, 3 stopped at the limit
+  bitre on #10189 (exec and match_all): 0.42 ms
+  bitre on #34224 (exec and match_all): 0.36 ms
+  bitre on #39426 (exec and match_all): 0.30 ms
