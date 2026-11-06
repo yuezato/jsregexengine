@@ -1,4 +1,4 @@
-"""Reproduce v59's evidence with the system Python and Node; see REPRODUCING.md."""
+"""Generate reviewer plots or check the paper's results; see REPRODUCING.md."""
 import argparse
 import hashlib
 import json
@@ -106,18 +106,32 @@ def full_checks(version):
     assert normalize(out) == normalize(expected), 'archived Python suite counts differ'
     packed = re.search(r'^batch: (\d+) anchored atomic rows', out, re.MULTILINE)
     assert packed and int(packed[1]) == 9207, 'packed reporter row count differs'
-    print('Table 4: 521904 standard JS rows, 18864 atomic rows, 23238 JS reference batch rows, '
+    print('Validation: 521904 standard JS rows, 18864 atomic rows, 23238 JS reference batch rows, '
           '9207 Python packed rows, 146599 forest/stop-set pairs.')
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('mode', choices=['quick', 'full'], nargs='?', default='quick')
+    parser.add_argument('mode', choices=['demo', 'quick', 'full'], nargs='?', default='quick',
+                        help='demo: comparison plots; quick/full: deterministic verification')
+    parser.add_argument('--profile', choices=['quick', 'full'], help='demo grid size')
+    parser.add_argument('--output', type=Path, help='demo output directory')
+    parser.add_argument('--timeout-ms', type=int, help='demo limit for one prepared matching call')
     args = parser.parse_args()
     if sys.flags.optimize or os.environ.get('PYTHONOPTIMIZE'):
         parser.error('Run with Python assertions enabled (no -O or PYTHONOPTIMIZE).')
     if sys.version_info < (3, 11):
         parser.error('Use Python 3.11+ for the public Python front end.')
+    if args.mode == 'demo':
+        check_files()
+        demo = [sys.executable, str(ROOT / 'review/demo.py')]
+        for name in ['profile', 'output', 'timeout_ms']:
+            if getattr(args, name) is not None:
+                demo += ['--' + name.replace('_', '-'), str(getattr(args, name))]
+        subprocess.run(demo, cwd=ROOT, env=ENV, check=True)
+        return
+    if any(getattr(args, name) is not None for name in ['profile', 'output', 'timeout_ms']):
+        parser.error('--profile, --output and --timeout-ms apply only to demo.')
     version = run([NODE, '--version']).strip()
     if int(version.removeprefix('v').split('.')[0]) < 24:
         parser.error('Use Node.js 24+ (tested with 24.22.1).')

@@ -1,0 +1,2 @@
+# Only the plot/report command needs an extra package. Matching and tests do not.
+matplotlib>=3.8,<4

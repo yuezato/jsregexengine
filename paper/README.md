@@ -1,4 +1,7 @@
-# Matching at every start: anonymous implementation and checks
+# Matching at every start: implementation API and detailed checks
+
+For the reviewer graph demo and short entry commands, start with the [root README](../README.md).
+The sections below describe individual checks and the prepared-tree API.
 
 From this directory run the following with Python 3.8+ and Node.js 24+.
 The examples use Unicode string properties and scoped pattern modifiers.

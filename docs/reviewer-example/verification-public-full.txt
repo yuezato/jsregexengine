@@ -1,0 +1,75 @@
++ node --version
+Python 3.12.14, Node v24.22.1
++ /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 review/size.py
+file                           physical     code
+paper/index/layers.mjs               70       61
+paper/index/pattern.mjs             114      105
+paper/index/word_index.mjs          139      130
+Theorem 1.2, full dependency set      323      296
+
+Other components (each whole file, shown separately)
+paper/bit_walk.mjs                  160      150
+regex_syntax.py                     119      102
+bitre.py                            534      481
+bitcolumns.py                       412      361
++ node paper/scaling.mjs
+Paper grid (depth, m, N, mN, ports, selection slots):
+  4 10 129 1290 2580 2580
+  4 10 257 2570 5140 5140
+  4 10 513 5130 10260 10260
+  8 18 129 2322 4644 4644
+  8 18 257 4626 9252 9252
+  8 18 513 9234 18468 18468
+  16 34 129 4386 8772 8772
+  16 34 257 8738 17476 17476
+  16 34 513 17442 34884 34884
+PASS: all deterministic fields in the nine published rows match.
++ node review/work.mjs
+family           cases   select/mN   max pops/mN   max predecessor scans/mN
+nullable-plus       9       1.00          2.00                      2.44
+failing-suffix      9       1.00          0.17                      0.08
+lookahead           9       1.00          2.00                      1.81
+lookbehind          9       1.00          2.00                      1.84
+atomic              9       1.00          1.73                      1.64
+sparse-choice       9       1.00          1.54                      1.38
+sibling-captures    9       1.00          2.00                      1.22
+PASS: 63 indexed instances, every endpoint and ordered sparse result checked.
++ /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 bench/bench_batch.py
+Overlap control, one group (N, m, batch column entries, replay source visits):
+  65 6 780 2400
+  129 6 1548 8896
+  257 6 3084 34176
+  513 6 6156 133888
+PASS: all-start answers agree with replay and the closed-form spans.
++ node paper/reference_semantics.mjs
++ node paper/batch_reporting.mjs
++ node paper/examples.mjs
+  {"native_anchored_examples": 117, "class_and_modifier_examples": 12, "overview_rows": 4}
++ node paper/table_clients.mjs
+  {"global": 960, "splits": 1920, "localGlobal": 660, "localSplits": 1320, "readers": 2}
++ node paper/native_chains.mjs
+  {"native_chain_comparisons": 157380, "backreference_suffix_comparisons": 14560, "four_suffix_comparisons": 36}
++ /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 paper/ordered_rows.py
+component signatures: 11472
+labelled products: 1788696
+labelled rows allowing repeated endpoints: {'bodies': 273, 'dfs_orders': 3276, 'sparse_items': 52416, 'priority_domains': 2184}
+all ranked four-position bodies: {'bodies': 10400, 'dfs_orders': 166400, 'sparse_items': 5324800, 'priority_domains': 166400}
++ /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 paper/quantifier_chains.py
+3836 local laws checked on raw lists
+424242 nonempty chains checked using distinct pairs
+885859 pair-order comparisons for 81 products and both star expansions
++ node --enable-experimental-regexp-engine paper/v8_admission.mjs
+{"node":"v24.22.1","v8":"13.6.233.17-node.58","base":"a?","accepted":[1,2,3,4],"rejected":[5,6,7,8,9,10]}
+{"node":"v24.22.1","v8":"13.6.233.17-node.58","base":"a","accepted":[1,2,3,4,5,6,7,8,9,10],"rejected":[]}
++ sh run_tests.sh
+reference: 100000 patterns (83 skipped as too large to enumerate), 449418 starts, 224349 matches; lookaround in 53%, lookbehind in 31%, lazy plus in 39%
+reference: list semantics vs ECMAScript matcher: 0 mismatches; bitre vs list semantics: 0 mismatches
+reference: offline all-start reporter vs list semantics: 0 mismatches
+V8 (v24.22.1): 50000 random patterns, exec and matchAll: 0 mismatches
+families: 488 instances (RegElk families and lazy variants), exec and matchAll: 0 mismatches with V8
+examples: 88 patterns, 263 starts, anchored matches: 0 mismatches with V8
+flags and classes (v24.22.1): 22 cases, 0 skipped, 0 mismatches with V8
+columns: 11824 maps and 4276 forest/stop/encoding cases; all comparisons passed
+batch: 9207 anchored atomic rows against two oracles; possessive and overlapping cases passed
+Table 4: 521904 standard JS rows, 18864 atomic rows, 23238 JS reference batch rows, 9207 Python packed rows, 146599 forest/stop-set pairs.
+PASS: full

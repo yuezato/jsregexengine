@@ -404,7 +404,7 @@ class Regex(ParsedPattern):
                     work.append((children[0], x if q == OPT else tails[v].last(x), False))
 
     def all_starts(self, w, B=None):
-        """One anchored result per position, including None for failures (Theorem 7.4)."""
+        """One anchored result per position, including None for failures (Theorem 8.1)."""
         return self.index(w, B)._report(global_only=False)
 
     def match_all(self, w):

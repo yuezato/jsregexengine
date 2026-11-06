@@ -1,0 +1,72 @@
+family           cases   select/mN   max pops/mN   max predecessor scans/mN
+nullable-plus       9       1.00          2.00                      2.44
+{"family":"nullable-plus","depth":4,"m":10,"N":129,"mN":1290,"selectCalls":1290,"pops":2579,"predecessors":2966,"emitted":516,"traceVisits":516}
+{"family":"nullable-plus","depth":4,"m":10,"N":257,"mN":2570,"selectCalls":2570,"pops":5139,"predecessors":5910,"emitted":1028,"traceVisits":1028}
+{"family":"nullable-plus","depth":4,"m":10,"N":513,"mN":5130,"selectCalls":5130,"pops":10259,"predecessors":11798,"emitted":2052,"traceVisits":2052}
+{"family":"nullable-plus","depth":8,"m":18,"N":129,"mN":2322,"selectCalls":2322,"pops":4643,"predecessors":5546,"emitted":1032,"traceVisits":1032}
+{"family":"nullable-plus","depth":8,"m":18,"N":257,"mN":4626,"selectCalls":4626,"pops":9251,"predecessors":11050,"emitted":2056,"traceVisits":2056}
+{"family":"nullable-plus","depth":8,"m":18,"N":513,"mN":9234,"selectCalls":9234,"pops":18467,"predecessors":22058,"emitted":4104,"traceVisits":4104}
+{"family":"nullable-plus","depth":16,"m":34,"N":129,"mN":4386,"selectCalls":4386,"pops":8771,"predecessors":10706,"emitted":2064,"traceVisits":2064}
+{"family":"nullable-plus","depth":16,"m":34,"N":257,"mN":8738,"selectCalls":8738,"pops":17475,"predecessors":21330,"emitted":4112,"traceVisits":4112}
+{"family":"nullable-plus","depth":16,"m":34,"N":513,"mN":17442,"selectCalls":17442,"pops":34883,"predecessors":42578,"emitted":8208,"traceVisits":8208}
+failing-suffix      9       1.00          0.17                      0.08
+{"family":"failing-suffix","depth":4,"m":12,"N":129,"mN":1548,"selectCalls":1548,"pops":258,"predecessors":129,"emitted":0,"traceVisits":0}
+{"family":"failing-suffix","depth":4,"m":12,"N":257,"mN":3084,"selectCalls":3084,"pops":514,"predecessors":257,"emitted":0,"traceVisits":0}
+{"family":"failing-suffix","depth":4,"m":12,"N":513,"mN":6156,"selectCalls":6156,"pops":1026,"predecessors":513,"emitted":0,"traceVisits":0}
+{"family":"failing-suffix","depth":8,"m":20,"N":129,"mN":2580,"selectCalls":2580,"pops":258,"predecessors":129,"emitted":0,"traceVisits":0}
+{"family":"failing-suffix","depth":8,"m":20,"N":257,"mN":5140,"selectCalls":5140,"pops":514,"predecessors":257,"emitted":0,"traceVisits":0}
+{"family":"failing-suffix","depth":8,"m":20,"N":513,"mN":10260,"selectCalls":10260,"pops":1026,"predecessors":513,"emitted":0,"traceVisits":0}
+{"family":"failing-suffix","depth":16,"m":36,"N":129,"mN":4644,"selectCalls":4644,"pops":258,"predecessors":129,"emitted":0,"traceVisits":0}
+{"family":"failing-suffix","depth":16,"m":36,"N":257,"mN":9252,"selectCalls":9252,"pops":514,"predecessors":257,"emitted":0,"traceVisits":0}
+{"family":"failing-suffix","depth":16,"m":36,"N":513,"mN":18468,"selectCalls":18468,"pops":1026,"predecessors":513,"emitted":0,"traceVisits":0}
+lookahead           9       1.00          2.00                      1.81
+{"family":"lookahead","depth":4,"m":9,"N":129,"mN":1161,"selectCalls":1161,"pops":2312,"predecessors":1798,"emitted":512,"traceVisits":512}
+{"family":"lookahead","depth":4,"m":9,"N":257,"mN":2313,"selectCalls":2313,"pops":4616,"predecessors":3590,"emitted":1024,"traceVisits":1024}
+{"family":"lookahead","depth":4,"m":9,"N":513,"mN":4617,"selectCalls":4617,"pops":9224,"predecessors":7174,"emitted":2048,"traceVisits":2048}
+{"family":"lookahead","depth":8,"m":13,"N":129,"mN":1677,"selectCalls":1677,"pops":3340,"predecessors":2826,"emitted":1024,"traceVisits":1024}
+{"family":"lookahead","depth":8,"m":13,"N":257,"mN":3341,"selectCalls":3341,"pops":6668,"predecessors":5642,"emitted":2048,"traceVisits":2048}
+{"family":"lookahead","depth":8,"m":13,"N":513,"mN":6669,"selectCalls":6669,"pops":13324,"predecessors":11274,"emitted":4096,"traceVisits":4096}
+{"family":"lookahead","depth":16,"m":21,"N":129,"mN":2709,"selectCalls":2709,"pops":5396,"predecessors":4882,"emitted":2048,"traceVisits":2048}
+{"family":"lookahead","depth":16,"m":21,"N":257,"mN":5397,"selectCalls":5397,"pops":10772,"predecessors":9746,"emitted":4096,"traceVisits":4096}
+{"family":"lookahead","depth":16,"m":21,"N":513,"mN":10773,"selectCalls":10773,"pops":21524,"predecessors":19474,"emitted":8192,"traceVisits":8192}
+lookbehind          9       1.00          2.00                      1.84
+{"family":"lookbehind","depth":4,"m":7,"N":129,"mN":903,"selectCalls":903,"pops":1799,"predecessors":1413,"emitted":512,"traceVisits":512}
+{"family":"lookbehind","depth":4,"m":7,"N":257,"mN":1799,"selectCalls":1799,"pops":3591,"predecessors":2821,"emitted":1024,"traceVisits":1024}
+{"family":"lookbehind","depth":4,"m":7,"N":513,"mN":3591,"selectCalls":3591,"pops":7175,"predecessors":5637,"emitted":2048,"traceVisits":2048}
+{"family":"lookbehind","depth":8,"m":11,"N":129,"mN":1419,"selectCalls":1419,"pops":2827,"predecessors":2441,"emitted":1024,"traceVisits":1024}
+{"family":"lookbehind","depth":8,"m":11,"N":257,"mN":2827,"selectCalls":2827,"pops":5643,"predecessors":4873,"emitted":2048,"traceVisits":2048}
+{"family":"lookbehind","depth":8,"m":11,"N":513,"mN":5643,"selectCalls":5643,"pops":11275,"predecessors":9737,"emitted":4096,"traceVisits":4096}
+{"family":"lookbehind","depth":16,"m":19,"N":129,"mN":2451,"selectCalls":2451,"pops":4883,"predecessors":4497,"emitted":2048,"traceVisits":2048}
+{"family":"lookbehind","depth":16,"m":19,"N":257,"mN":4883,"selectCalls":4883,"pops":9747,"predecessors":8977,"emitted":4096,"traceVisits":4096}
+{"family":"lookbehind","depth":16,"m":19,"N":513,"mN":9747,"selectCalls":9747,"pops":19475,"predecessors":17937,"emitted":8192,"traceVisits":8192}
+atomic              9       1.00          1.73                      1.64
+{"family":"atomic","depth":4,"m":10,"N":129,"mN":1290,"selectCalls":1290,"pops":1806,"predecessors":1547,"emitted":512,"traceVisits":512}
+{"family":"atomic","depth":4,"m":10,"N":257,"mN":2570,"selectCalls":2570,"pops":3598,"predecessors":3083,"emitted":1024,"traceVisits":1024}
+{"family":"atomic","depth":4,"m":10,"N":513,"mN":5130,"selectCalls":5130,"pops":7182,"predecessors":6155,"emitted":2048,"traceVisits":2048}
+{"family":"atomic","depth":8,"m":14,"N":129,"mN":1806,"selectCalls":1806,"pops":2834,"predecessors":2575,"emitted":1024,"traceVisits":1024}
+{"family":"atomic","depth":8,"m":14,"N":257,"mN":3598,"selectCalls":3598,"pops":5650,"predecessors":5135,"emitted":2048,"traceVisits":2048}
+{"family":"atomic","depth":8,"m":14,"N":513,"mN":7182,"selectCalls":7182,"pops":11282,"predecessors":10255,"emitted":4096,"traceVisits":4096}
+{"family":"atomic","depth":16,"m":22,"N":129,"mN":2838,"selectCalls":2838,"pops":4890,"predecessors":4631,"emitted":2048,"traceVisits":2048}
+{"family":"atomic","depth":16,"m":22,"N":257,"mN":5654,"selectCalls":5654,"pops":9754,"predecessors":9239,"emitted":4096,"traceVisits":4096}
+{"family":"atomic","depth":16,"m":22,"N":513,"mN":11286,"selectCalls":11286,"pops":19482,"predecessors":18455,"emitted":8192,"traceVisits":8192}
+sparse-choice       9       1.00          1.54                      1.38
+{"family":"sparse-choice","depth":4,"m":13,"N":129,"mN":1677,"selectCalls":1677,"pops":2575,"predecessors":2317,"emitted":128,"traceVisits":128}
+{"family":"sparse-choice","depth":4,"m":13,"N":257,"mN":3341,"selectCalls":3341,"pops":5135,"predecessors":4621,"emitted":256,"traceVisits":256}
+{"family":"sparse-choice","depth":4,"m":13,"N":513,"mN":6669,"selectCalls":6669,"pops":10255,"predecessors":9229,"emitted":512,"traceVisits":512}
+{"family":"sparse-choice","depth":8,"m":25,"N":129,"mN":3225,"selectCalls":3225,"pops":4635,"predecessors":4377,"emitted":128,"traceVisits":128}
+{"family":"sparse-choice","depth":8,"m":25,"N":257,"mN":6425,"selectCalls":6425,"pops":9243,"predecessors":8729,"emitted":256,"traceVisits":256}
+{"family":"sparse-choice","depth":8,"m":25,"N":513,"mN":12825,"selectCalls":12825,"pops":18459,"predecessors":17433,"emitted":512,"traceVisits":512}
+{"family":"sparse-choice","depth":16,"m":49,"N":129,"mN":6321,"selectCalls":6321,"pops":8755,"predecessors":8497,"emitted":128,"traceVisits":128}
+{"family":"sparse-choice","depth":16,"m":49,"N":257,"mN":12593,"selectCalls":12593,"pops":17459,"predecessors":16945,"emitted":256,"traceVisits":256}
+{"family":"sparse-choice","depth":16,"m":49,"N":513,"mN":25137,"selectCalls":25137,"pops":34867,"predecessors":33841,"emitted":512,"traceVisits":512}
+sibling-captures    9       1.00          2.00                      1.22
+{"family":"sibling-captures","depth":4,"m":15,"N":129,"mN":1935,"selectCalls":1935,"pops":3850,"predecessors":2181,"emitted":512,"traceVisits":896}
+{"family":"sibling-captures","depth":4,"m":15,"N":257,"mN":3855,"selectCalls":3855,"pops":7690,"predecessors":4357,"emitted":1024,"traceVisits":1792}
+{"family":"sibling-captures","depth":4,"m":15,"N":513,"mN":7695,"selectCalls":7695,"pops":15370,"predecessors":8709,"emitted":2048,"traceVisits":3584}
+{"family":"sibling-captures","depth":8,"m":31,"N":129,"mN":3999,"selectCalls":3999,"pops":7954,"predecessors":4745,"emitted":1024,"traceVisits":1920}
+{"family":"sibling-captures","depth":8,"m":31,"N":257,"mN":7967,"selectCalls":7967,"pops":15890,"predecessors":9481,"emitted":2048,"traceVisits":3840}
+{"family":"sibling-captures","depth":8,"m":31,"N":513,"mN":15903,"selectCalls":15903,"pops":31762,"predecessors":18953,"emitted":4096,"traceVisits":7680}
+{"family":"sibling-captures","depth":16,"m":63,"N":129,"mN":8127,"selectCalls":8127,"pops":16162,"predecessors":9873,"emitted":2048,"traceVisits":3968}
+{"family":"sibling-captures","depth":16,"m":63,"N":257,"mN":16191,"selectCalls":16191,"pops":32290,"predecessors":19729,"emitted":4096,"traceVisits":7936}
+{"family":"sibling-captures","depth":16,"m":63,"N":513,"mN":32319,"selectCalls":32319,"pops":64546,"predecessors":39441,"emitted":8192,"traceVisits":15872}
+PASS: 63 indexed instances, every endpoint and ordered sparse result checked.

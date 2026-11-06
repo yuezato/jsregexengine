@@ -1,0 +1,11 @@
+depth,m,status,reason
+1,6,accepted,
+2,8,accepted,
+3,10,accepted,
+4,12,accepted,
+5,14,unsupported,Invalid regular expression: /(((((a?)+?)+?)+?)+?)+?b/l: Cannot be executed in linear time
+6,16,unsupported,Invalid regular expression: /((((((a?)+?)+?)+?)+?)+?)+?b/l: Cannot be executed in linear time
+7,18,unsupported,Invalid regular expression: /(((((((a?)+?)+?)+?)+?)+?)+?)+?b/l: Cannot be executed in linear time
+8,20,unsupported,Invalid regular expression: /((((((((a?)+?)+?)+?)+?)+?)+?)+?)+?b/l: Cannot be executed in linear time
+9,22,unsupported,Invalid regular expression: /(((((((((a?)+?)+?)+?)+?)+?)+?)+?)+?)+?b/l: Cannot be executed in linear time
+10,24,unsupported,Invalid regular expression: /((((((((((a?)+?)+?)+?)+?)+?)+?)+?)+?)+?)+?b/l: Cannot be executed in linear time

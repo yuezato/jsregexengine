@@ -1,0 +1,47 @@
++ node --version
+Python 3.12.14, Node v24.22.1
++ /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 review/size.py
+file                           physical     code
+paper/index/layers.mjs               70       61
+paper/index/pattern.mjs             114      105
+paper/index/word_index.mjs          139      130
+Theorem 1.2, full dependency set      323      296
+
+Other components (each whole file, shown separately)
+paper/bit_walk.mjs                  160      150
+regex_syntax.py                     119      102
+bitre.py                            534      481
+bitcolumns.py                       412      361
++ node paper/scaling.mjs
+Paper grid (depth, m, N, mN, ports, selection slots):
+  4 10 129 1290 2580 2580
+  4 10 257 2570 5140 5140
+  4 10 513 5130 10260 10260
+  8 18 129 2322 4644 4644
+  8 18 257 4626 9252 9252
+  8 18 513 9234 18468 18468
+  16 34 129 4386 8772 8772
+  16 34 257 8738 17476 17476
+  16 34 513 17442 34884 34884
+PASS: all deterministic fields in the nine published rows match.
++ node review/work.mjs
+family           cases   select/mN   max pops/mN   max predecessor scans/mN
+nullable-plus       9       1.00          2.00                      2.44
+failing-suffix      9       1.00          0.17                      0.08
+lookahead           9       1.00          2.00                      1.81
+lookbehind          9       1.00          2.00                      1.84
+atomic              9       1.00          1.73                      1.64
+sparse-choice       9       1.00          1.54                      1.38
+sibling-captures    9       1.00          2.00                      1.22
+PASS: 63 indexed instances, every endpoint and ordered sparse result checked.
++ /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 bench/bench_batch.py quick
+Overlap control, one group (N, m, batch column entries, replay source visits):
+  33 6 396 688
+  65 6 780 2400
+  129 6 1548 8896
+PASS: all-start answers agree with replay and the closed-form spans.
++ node paper/examples.mjs
+{"native_anchored_examples":117,"class_and_modifier_examples":12,"overview_rows":4}
++ /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 tests/test_examples.py
+examples: 88 patterns, 263 starts, anchored matches: 0 mismatches with V8
+PASS: quick
