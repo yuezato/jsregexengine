@@ -50,7 +50,7 @@ def compare(family, groups, n):
 def main(quick):
     depths = [1, 9] if quick else [1, 8, 24]
     sizes = [32, 64, 128] if quick else [64, 128, 256, 512]
-    print('Python', sys.version.split()[0], '(timings in ms; both include preprocessing)')
+    print('Python', sys.version.split()[0], '(timings in ms; both start after pattern preparation and include text indexing)')
     print('family groups m N moving_cells replay_walk_calls batch_ms replay_ms')
     for family in ('ahead', 'behind', 'atomic'):
         for g in depths:

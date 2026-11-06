@@ -1,0 +1,9 @@
+{"k":4,"m":10,"N":129,"vertices":2580,"edges":3095,"cells":2580,"traceVisits":516,"outputSlots":516,"answerBytes":34,"medianMs":0.92,"bitsMedianMs":0.15}
+{"k":4,"m":10,"N":257,"vertices":5140,"edges":6167,"cells":5140,"traceVisits":1028,"outputSlots":1028,"answerBytes":66,"medianMs":0.47,"bitsMedianMs":0.14}
+{"k":4,"m":10,"N":513,"vertices":10260,"edges":12311,"cells":10260,"traceVisits":2052,"outputSlots":2052,"answerBytes":130,"medianMs":1.2,"bitsMedianMs":0.48}
+{"k":8,"m":18,"N":129,"vertices":4644,"edges":5675,"cells":4644,"traceVisits":1032,"outputSlots":1032,"answerBytes":34,"medianMs":0.37,"bitsMedianMs":0.11}
+{"k":8,"m":18,"N":257,"vertices":9252,"edges":11307,"cells":9252,"traceVisits":2056,"outputSlots":2056,"answerBytes":66,"medianMs":0.74,"bitsMedianMs":0.24}
+{"k":8,"m":18,"N":513,"vertices":18468,"edges":22571,"cells":18468,"traceVisits":4104,"outputSlots":4104,"answerBytes":130,"medianMs":1.57,"bitsMedianMs":0.46}
+{"k":16,"m":34,"N":129,"vertices":8772,"edges":10835,"cells":8772,"traceVisits":2064,"outputSlots":2064,"answerBytes":34,"medianMs":0.65,"bitsMedianMs":0.22}
+{"k":16,"m":34,"N":257,"vertices":17476,"edges":21587,"cells":17476,"traceVisits":4112,"outputSlots":4112,"answerBytes":66,"medianMs":1.55,"bitsMedianMs":0.43}
+{"k":16,"m":34,"N":513,"vertices":34884,"edges":43091,"cells":34884,"traceVisits":8208,"outputSlots":8208,"answerBytes":130,"medianMs":3.81,"bitsMedianMs":1.44}

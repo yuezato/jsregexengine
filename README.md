@@ -1,8 +1,21 @@
 # bitre: JavaScript-style regex matching from every start
 
-This is the experimental Python implementation for *JavaScript Regex Matching with Captures from Every Start* (v59). For a pattern, a text and a set of allowed final positions, `Regex.all_starts` returns one row per starting position. Each row gives the first permitted match in JavaScript’s trial order, including its end and capture spans, or `None` for failure. The piecewise batch reporter implements Theorem 7.4. It shares work across overlapping lookarounds. `match_all` uses the same computation for the rows selected by the global cursor.
+## Reproducing the paper
 
-For a single match, `exec` builds a decision table and walks the leftmost match. `index(text, B).match_at(x)` walks one anchored match with the allowed ends fixed by `B`. These are the paths timed by the original RegElk experiments. The word-space index with output-sensitive sparse queries (Theorem 1.2) is in the paper’s separate JavaScript supplement. The tests and measurements below concern this Python implementation.
+From the repository root, run `python3 reproduce.py quick` for the deterministic product-linearity checks or `python3 reproduce.py full` for the paper's Section 9 and the public correctness suite. Use Python 3.11+ and Node.js 24+; these commands run offline. The expected work counts, theorem-to-code map and cost model are in [REPRODUCING.md](REPRODUCING.md).
+
+## Two implementations
+
+| Goal | Entry point | Guarantee in the paper |
+|---|---|---|
+| Choose a starting position after preprocessing and enumerate only its defined captures | JavaScript, `paper/index/word_index.mjs`: `compile`, `prepareMatches`, `index.report` | Theorem 1.2. O(mN) time and machine words to build the index; O(1) for the endpoint, O(1+k) for the k defined spans. |
+| Write a dense match result at every start once | Python, `bitre.py`: `Regex.all_starts`; compact position maps in `bitcolumns.py` | Theorem 7.4. O(mN) time and O(mN) bits of working space in the stated RAM model, excluding delivered output. |
+
+The complete word index, including tree preparation, spans three modules and 296 nonblank, noncomment JavaScript lines (323 physical lines). Run `python3 review/size.py` to count them. The packed reporter retains columns at piece boundaries and rebuilds one piece at a time. It returns a failure or the preferred endpoint and all capture slots at each start.
+
+Run `node paper/scaling.mjs --time` on a prebuilt occurrence tree. The `fromAstMedianMs` field includes tree preparation, text indexing and all dense output. Other fields isolate index construction or reuse a prepared pattern.
+
+The Python `match_all` client uses the batch computation for global matches. For the original leftmost-match experiments, `exec` builds a decision table and walks the chosen path. Python `index(text, B).match_at(x)` also walks one selected match; the output-sensitive index is the JavaScript entry point in the table above.
 
 ## Requirements
 
@@ -70,10 +83,13 @@ The rest of the pattern, `a?b$`, succeeds from 1 or 2. At 0 the first iteration 
 ## Repository layout
 
 ```
-bitre.py              syntax, region sweeps, single-match walk, piecewise batch reporter
+paper/index/          Theorem 1.2: pattern preparation, position layers, word index and reports
+paper/bit_walk.mjs    packed Boolean decisions and a single-start walk
+regex_syntax.py       Python source parser and primitive character semantics
+bitre.py              region sweeps, single-match walk, piecewise batch reporter
 bitcolumns.py         packed partial maps, color lookup and stopping forests
 families.py           benchmark families: those of RegElk, and lazy variants
-run_tests.sh          runs every correctness test
+run_tests.sh          runs the Python correctness suite
 reference/
   semantics.py        reference semantics: the paper's ordered lists, and a transcription
                       of ECMAScript's backtracking matcher
@@ -115,7 +131,7 @@ results/              the outputs reported below (text, and JSON with every timi
 | Write captures | `_report` retains piece-root columns. In top-down order it rebuilds each piece and follows only the surviving visits for every selected start. Signed requests are filled in two sweeps, so nested lookbehind can move a capture outside the overall match. | Theorem 7.4 and Appendix C.4 |
 | Walk a single match | `_walk` and `_collect` replay a selected path with timestamped capture resets. This remains useful for a single query and the original experiments. | Appendix C.5 |
 
-For `m` syntax occurrences and `N = len(w)+1`, the batch takes `O(mN)` word-RAM operations. The capture arrays are delivered output. There are `O(sqrt(m))` simultaneously live columns in the piece passes. `bitcolumns.py` uses byte-rounded unsigned arrays for explicit positions. When positions exceed the column's budget, it colors half-open source–target intervals and stores fixed points separately. To look up a color, it stably partitions by digits of radix `O(sqrt(m))`. There are a constant number of digits. Packed bitmaps with prefix counts and select directories route a position through these partitions in constant time. Coded terminal maps traverse parent and inverse links without a word-length recursion stack.
+For a prepared tree of `m` syntax occurrences and `N = len(w)+1`, with constant-cost primitive tests or supplied predicate tables, the batch takes `O(mN)` word-RAM operations. The benchmark constructs the pattern before timing. See the [timing boundaries](REPRODUCING.md#timing). The capture arrays are delivered output. There are `O(sqrt(m))` simultaneously live columns in the piece passes. `bitcolumns.py` uses byte-rounded unsigned arrays for explicit positions. When positions exceed the column's budget, it colors half-open source–target intervals and stores fixed points separately. To look up a color, it stably partitions by digits of radix `O(sqrt(m))`. There are a constant number of digits. Packed bitmaps with prefix counts and select directories route a position through these partitions in constant time. Coded terminal maps traverse parent and inverse links without a word-length recursion stack.
 
 Theorem 7.4 gives `O(mN)` workspace **bits** in the manuscript’s RAM model, excluding input, supplied primitive tests and delivered output. The Python prototype also uses conventional syntax descriptors, objects and byte-rounded buffers. Its process RSS includes the interpreter and allocator. The batch API writes all rows once. `match_at` performs a walk when called later.
 
@@ -281,7 +297,7 @@ Spelled with capturing groups, the d = 2 pattern is `((a?)+)+b`, nine characters
     - syntax that only JavaScript has: `\cX`, `\u{…}`, `\p{…}` and the `v` flag
 
   Unsupported flag letters, general counted repeats and backreferences raise `NotImplementedError` or a parser error. The Python parser accepts a different syntax from ECMAScript outside the documented fragment.
-- **Parser.** The front end relies on `re._parser`, an internal module of CPython that may change between versions. On the supported fragment its syntax agrees with JavaScript's. It also merges single-letter alternatives into a class and factors common prefixes out of alternatives. Both rewrites preserve JavaScript's answers, and m counts nodes after them.
+- **Parser.** The front end relies on `re._parser`, an internal module of CPython that may change between versions. For example, its parser rejects JavaScript’s empty classes `[]` and `[^]`. It also merges single-letter alternatives into a class and factors common prefixes out of alternatives. Both rewrites preserve JavaScript's answers, and m counts nodes after them.
 - **Positions.** Positions are code points. On words without characters outside the Basic Multilingual Plane, they coincide with JavaScript's default mode, whose case folding `bitre.py` implements.
 - **Timing.** Pure Python costs roughly 0.5 to 1 µs per cell. Short runs (`quick`) give noisier slopes, because fixed costs weigh more at small sizes.
 
